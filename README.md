@@ -1,5 +1,7 @@
 2018 CCF大数据竞赛
 
+网址：https://www.datafountain.cn/competitions/311/details/rule
+
 赛题名称：
 
 
