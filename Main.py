@@ -3,6 +3,8 @@ from xgb_model import *
 from TimeCost import *
 from sklearn.model_selection import StratifiedKFold
 from RemoveFeatures import *
+from sklearn.preprocessing  import MinMaxScaler
+import pandas as pd
 
 if __name__ == '__main__':
 
@@ -42,29 +44,64 @@ if __name__ == '__main__':
 
     print("df.columns:",df.columns)
     print("dft.columns:",dft.columns)
-    #将不是类别变量的特征进行标准化处理
-    # df, dft = fe.feature_process(df, dft)
-    rm_feats=RemoveFeat()
-    df=rm_feats.remove_feats(df,['former_complaint_num',
-                      # 'pay_times',   #本次添加
-                      'complaint_level',
-                      'former_complaint_fee',
-                      'many_over_bill',
-                      # 'is_promise_low_consume',  #本次添加
-                      #'service_type',  # 添加了
-                      'is_mix_service',
-                      #"gender",    #去掉gender试试
-                      'net_service'])
-    dft=rm_feats.remove_feats(dft,['former_complaint_num',
-                      # 'pay_times',   #本次添加
-                      'complaint_level',
-                      'former_complaint_fee',
-                       'many_over_bill',
-                      # 'is_promise_low_consume',  #本次添加
-                      #'service_type',  # 添加了
-                      'is_mix_service',
-                      #"gender",    #去掉gender试试
-                      'net_service'])
+
+    rm_feats = RemoveFeat()
+
+    #对离散数据进行one_hot编码
+    cate_features=['is_promise_low_consume','contract_time','contract_type','many_over_bill','online_time','is_mix_service','service_type','net_service','complaint_level','gender']
+    #对连续数据进行归一化操作
+    const_features = ['1_total_fee','2_total_fee','3_total_fee','4_total_fee','month_traffic','pay_times',\
+                      'pay_num','last_month_traffic','local_traffic_month','local_caller_time','service1_caller_time',\
+                      'service2_caller_time','age','former_complaint_num','former_complaint_fee']
+    df=rm_feats.one_hot(df,cate_features)
+    dft=rm_feats.one_hot(dft,cate_features)
+
+    df=rm_feats.Max_Min(df,const_features)
+    dft=rm_feats.Max_Min(dft,const_features)
+    print(df)
+
+    #本次去掉相关的特征2018.10.14号
+    # df=rm_feats.remove_feats(df,['former_complaint_num',
+    #                   # 'pay_times',   #本次添加
+    #                   'complaint_level',
+    #                   'former_complaint_fee',
+    #                   'many_over_bill',
+    #                   # 'is_promise_low_consume',  #本次添加
+    #                   #'service_type',  # 添加了
+    #                   'is_mix_service',
+    #                   #"gender",    #去掉gender试试
+    #                   'net_service'])
+    # dft=rm_feats.remove_feats(dft,['former_complaint_num',
+    #                   # 'pay_times',   #本次添加
+    #                   'complaint_level',
+    #                   'former_complaint_fee',
+    #                    'many_over_bill',
+    #                   # 'is_promise_low_consume',  #本次添加
+    #                   #'service_type',  # 添加了
+    #                   'is_mix_service',
+    #                   #"gender",    #去掉gender试试
+    #                   'net_service'])
+
+    df = rm_feats.remove_feats(df, ['former_complaint_num',
+                                    'pay_times',   #本次添加
+                                    'complaint_level',
+                                    'former_complaint_fee',
+                                    'many_over_bill',
+                                    'is_promise_low_consume',  #本次添加
+                                    # 'service_type',  # 添加了
+                                    'is_mix_service',
+                                    # "gender",    #去掉gender试试
+                                    'net_service'])
+    dft = rm_feats.remove_feats(dft, ['former_complaint_num',
+                                      'pay_times',   #本次添加
+                                      'complaint_level',
+                                      'former_complaint_fee',
+                                      'many_over_bill',
+                                      'is_promise_low_consume',  #本次添加
+                                      # 'service_type',  # 添加了
+                                      'is_mix_service',
+                                      # "gender",    #去掉gender试试
+                                      'net_service'])
     #给类别变量添加标签，转化为连续的值
     print("dft:",dft.columns)
     print("df:",df.columns)
