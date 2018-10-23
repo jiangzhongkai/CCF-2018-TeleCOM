@@ -61,27 +61,6 @@ if __name__ == '__main__':
     print(df)
 
     #本次去掉相关的特征2018.10.14号
-    # df=rm_feats.remove_feats(df,['former_complaint_num',
-    #                   # 'pay_times',   #本次添加
-    #                   'complaint_level',
-    #                   'former_complaint_fee',
-    #                   'many_over_bill',
-    #                   # 'is_promise_low_consume',  #本次添加
-    #                   #'service_type',  # 添加了
-    #                   'is_mix_service',
-    #                   #"gender",    #去掉gender试试
-    #                   'net_service'])
-    # dft=rm_feats.remove_feats(dft,['former_complaint_num',
-    #                   # 'pay_times',   #本次添加
-    #                   'complaint_level',
-    #                   'former_complaint_fee',
-    #                    'many_over_bill',
-    #                   # 'is_promise_low_consume',  #本次添加
-    #                   #'service_type',  # 添加了
-    #                   'is_mix_service',
-    #                   #"gender",    #去掉gender试试
-    #                   'net_service'])
-
     df = rm_feats.remove_feats(df, ['former_complaint_num',
                                     'pay_times',   #本次添加
                                     'complaint_level',
@@ -140,17 +119,5 @@ if __name__ == '__main__':
 
         if not mode:
             dp.transform_index(result)
-    # xgb.load_model()
-    #投票
-    # if len(cv_pred)!=0:
-    #     submit = []
-    #     for line in cv_pred:
-    #         submit.append(np.argmax(np.bincount(line)))  # 统计出现的次数
-
-        #提交结果
-        # dp.transform_index(submit)
-
-    #最后的结束时间
-    # tc.print_event()
 
 
