@@ -13,7 +13,8 @@ if __name__ == '__main__':
     mode = False
     tc = TimeCost()
     dp = data_processing(mode)
-    df, dft = dp.data_input('../data/train_pro_3.csv', '../data/test_pro_3.csv')
+    df, dft = dp.data_input('../data/train_pro_4.csv', '../data/test_pro_4.csv')
+
     tc.print_event()
 
     df=df.replace("\\N",-1)
@@ -48,39 +49,58 @@ if __name__ == '__main__':
     rm_feats = RemoveFeat()
 
     #对离散数据进行one_hot编码
-    cate_features=['is_promise_low_consume','contract_time','contract_type','many_over_bill','online_time','is_mix_service','service_type','net_service','complaint_level','gender']
-    #对连续数据进行归一化操作
+    cate_features=['is_promise_low_consume','contract_time','contract_type','many_over_bill','online_time','is_mix_service','service_type','net_service','complaint_level','gender','current_service','user_id']
+
     const_features = ['1_total_fee','2_total_fee','3_total_fee','4_total_fee','month_traffic','pay_times',\
-                      'pay_num','last_month_traffic','local_traffic_month','local_caller_time','service1_caller_time',\
+                      'pay_num','last_month_traffic','local_trafffic_month','local_caller_time','service1_caller_time',\
                       'service2_caller_time','age','former_complaint_num','former_complaint_fee']
-    df=rm_feats.one_hot(df,cate_features)
-    dft=rm_feats.one_hot(dft,cate_features)
 
-    df=rm_feats.Max_Min(df,const_features)
-    dft=rm_feats.Max_Min(dft,const_features)
-    print(df)
-
+    #在做归一化和编码得时候，可以把训练集和测试集拼接在一起做，最后再把分割开.....
     #本次去掉相关的特征2018.10.14号
+    # df=rm_feats.remove_feats(df,['former_complaint_num',
+    #                   # 'pay_times',   #本次添加
+    #                   'complaint_level',
+    #                   'former_complaint_fee',
+    #                   'many_over_bill',
+    #                   # 'is_promise_low_consume',  #本次添加
+    #                   #'service_type',  # 添加了
+    #                   'is_mix_service',
+    #                   #"gender",    #去掉gender试试
+    #                   'net_service'])
+    # dft=rm_feats.remove_feats(dft,['former_complaint_num',
+    #                   # 'pay_times',   #本次添加
+    #                   'complaint_level',
+    #                   'former_complaint_fee',
+    #                    'many_over_bill',
+    #                   # 'is_promise_low_consume',  #本次添加
+    #                   #'service_type',  # 添加了
+    #                   'is_mix_service',
+    #                   #"gender",    #去掉gender试试
+    #                   'net_service'])
     df = rm_feats.remove_feats(df, ['former_complaint_num',
                                     'pay_times',   #本次添加
-                                    'complaint_level',
+                                    # 'complaint_level',
                                     'former_complaint_fee',
                                     'many_over_bill',
-                                    'is_promise_low_consume',  #本次添加
-                                    # 'service_type',  # 添加了
-                                    'is_mix_service',
+                                    # 'is_promise_low_consume',  # 本次添加
+                                    'service_type',  # 添加了
+                                    # 'is_mix_service',
                                     # "gender",    #去掉gender试试
-                                    'net_service'])
-    dft = rm_feats.remove_feats(dft, ['former_complaint_num',
-                                      'pay_times',   #本次添加
-                                      'complaint_level',
-                                      'former_complaint_fee',
-                                      'many_over_bill',
-                                      'is_promise_low_consume',  #本次添加
-                                      # 'service_type',  # 添加了
-                                      'is_mix_service',
-                                      # "gender",    #去掉gender试试
-                                      'net_service'])
+                                    'net_service',
+                                    'service1_caller_time'])
+    dft = rm_feats.remove_feats(dft,['former_complaint_num',
+                                    'pay_times',   #本次添加
+                                    # 'complaint_level',
+                                    'former_complaint_fee',
+                                    'many_over_bill',
+                                    # 'is_promise_low_consume',  # 本次添加
+                                    'service_type',  # 添加了
+                                    # 'is_mix_service',
+                                    # "gender",    #去掉gender试试
+                                    'net_service',
+                                    'service1_caller_time'])
+
+
     #给类别变量添加标签，转化为连续的值
     print("dft:",dft.columns)
     print("df:",df.columns)
@@ -119,5 +139,17 @@ if __name__ == '__main__':
 
         if not mode:
             dp.transform_index(result)
+    # xgb.load_model()
+    #投票
+    # if len(cv_pred)!=0:
+    #     submit = []
+    #     for line in cv_pred:
+    #         submit.append(np.argmax(np.bincount(line)))  # 统计出现的次数
+
+        #提交结果
+        # dp.transform_index(submit)
+
+    #最后的结束时间
+    # tc.print_event()
 
 
