@@ -42,11 +42,16 @@
      
    8.这里没有使用stacking方式，而是简单的将上述的两个模型通过调整不同的参数来生成多个结果，然后再将这些结果通过投票的原则生成一个最终的结果，最终的f1_score:0.7693
    
+   
+ #### 参考资料：
+  https://blog.csdn.net/github_38414650/article/details/76061893
+  https://blog.csdn.net/hqr20627/article/details/79426031
+  https://www.jianshu.com/p/48e82dbb142b
+  https://www.jianshu.com/p/5378ef009cae
+  https://blog.csdn.net/sinat_26917383/article/details/54667077
 
 #初赛成绩：
 
   A榜：38/2546
   
   B榜：49/2546
-  
- 兄弟姐妹们，如果你觉得对你有点帮助，别忘记star咯。。。。
