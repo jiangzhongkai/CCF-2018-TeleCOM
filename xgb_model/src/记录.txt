@@ -1,0 +1,41 @@
+basleine_111.csv
+
+
+#2. 删除了'is_promise_low_consume',
+    'service_type'  #
+    并且将训练轮数改为2000
+    baseline_112.csv
+
+
+
+                       feature  score
+0              is_over_fee    175
+1                pay_times    356
+2   is_promise_low_consume    439
+3                   gender    514
+4              traffic_min    612
+5             service_type    625
+6               call_local    696
+7   call_local_and_service    830
+8                 call_max    845
+9                  fee_max   1057
+10                call_min   1062
+11                     age   1113
+12        fee_interval_max   1155
+13                 pay_num   1166
+14         traffic_0_month   1171
+15        fee_interval_min   1181
+16             traffic_sum   1512
+17             fee_4_month   1836
+18             traffic_max   1839
+19    call_service_1_month   1851
+20             fee_2_month   1925
+21   traffic_local_0_month   1975
+22             online_time   2170
+23           contract_time   2198
+24             fee_3_month   2521
+25           contract_type   2862
+26         traffic_1_month   3210
+27    call_service_2_month   3402
+28             fee_1_month   3628
+29                 fee_min   4616
