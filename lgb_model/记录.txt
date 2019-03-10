@@ -1,0 +1,610 @@
+======================================================================================
+1.主要使用三种模型：
+   RF模型
+   GBDT模型
+   lgb模型
+   Extra-tree模型
+   xgb模型
+   keras神经网络
+2.运用GridSearchCV,RandomSearchCV来进行调参或者使用贝叶斯进行调参，都可以试试
+3.做特征工程
+4.模型融合  #stacking/blending/voting
+
+========================================================================================
+
+使用lgb模型：
+  1.当max_depth=5,数据去重
+  线下分数:[0.93177014653762491, 0.93510427349868941, 0.93614642945113857, 0.93515757465008986, 0.93466996911099531]
+  平均分：0.93456967865
+  数据存储在baseline_max_depth=5.csv文件中
+  分数：0.80685711
+
+  2.当max_depth=5,数据去重，学习率设为0.02
+    线下分数:[0.9295493140299812, 0.92948434234673905, 0.93016579679279265, 0.92880520012028434, 0.92972883357347391]
+    线上分数：0.929546697373
+
+  3.max_depth=6
+  线下：[0.93559925453602266, 0.93674076627148561, 0.93628025712536023, 0.93689846908248919, 0.93724284607738506]
+  平均分：0.936552318619
+  线上：0.814316750
+  baseline_1.csv
+
+  4.max_depth=7
+  线下：[0.93437075003065229, 0.93665420354403006, 0.93768982761967057, 0.9374093093728415, 0.93661132818194637]
+  平均分：0.936547083
+  线上：0.81311876000
+  baseline_2.csv
+
+  5.max_depth=6
+    lr=0.2
+    n_splits=6
+    线下：[0.93636904469265725, 0.93789760018431512, 0.93729315019561876, 0.93674736492800237, 0.93777851341027851, 0.937797828317954]
+    平均分：0.937313916955
+    线上：0.81446826000
+    文件：baseline_2.csv
+
+  6.max_depth=6
+  lr=0.2
+  num_leaves=40
+  线下：[0.93664182691102016, 0.93660743648997324, 0.93666554588544204, 0.93658830938023985, 0.9372339767960185, 0.93841243255048268]
+  线上：0.813952680
+  平均分： 0.937024921336
+  文件：baseline_3.csv
+
+  [0.93636904469265725, 0.93789760018431512, 0.93729315019561876, 0.93674736492800237, 0.93777851341027851, 0.937797828317954] 0.937313916955
+多模型进行训练
+
+
+   7.换了数据集之后：
+   baseline_5.csv   线上：
+                    线下：0.73952675
+
+   8.将数据集里面的不符合格式的数据进行了处理,结果提高了2个万位
+   线下：[0.91413251896164871, 0.91389699137647373, 0.91558523424510307, 0.9156053221233198, 0.91402931439010004, 0.91449097522525269]
+   平均分：0.836535950511
+   线上：0.73974502000
+   文件：baseline_7.csv
+
+   9.没有去掉投诉的字段
+   线下：[0.91284095186091296, 0.91412649437783711, 0.91482740108978999, 0.91612140551345334, 0.91339092783930298, 0.9139727894872457]
+   平均分：0.835786009754
+   线上：0.73969001
+   baseline_9.csv
+
+   10.学习率设为0.1
+   线下：[0.91174895923642585, 0.91305291165580771, 0.91540798445526439, 0.91575407488153282, 0.91402091765221272, 0.91496385717992756]
+   线上：0.73813134
+   平均分：0.83568506381
+   baseline_9.csv
+
+   11.n_splits=5
+      num_leaves=40
+    线下：[0.91288800269866688, 0.91560292453627068, 0.91426287786295857, 0.91332466122157363, 0.91249681458560128] 0.913715056181
+    平均分：0.8348
+    线上：
+    baseline_10.csv
+
+    baseline_13.csv   0.73969001
+
+    12.使用投票表决的融合策略：
+       baseline_5.csv    0.73952675
+       baseline_7.csv    0.73974502000
+       baseline_9.csv    0.73813134
+       baseline_11.csv   0.
+       baseline_12.csv
+       融合后的模型分数：
+       submit_1.csv      0.73992574000  涨了1.几个万分点
+
+    13.继续使用投票策略：
+       baseline_5.csv    0.73952675
+       baseline_7.csv    0.73974502000
+       baseline_9.csv    0.73813134
+       baseline_11.csv   0.
+       baseline_12.csv
+       baseline_13.csv   0.73969001
+       融合后的模型分数：
+       submit_2.csv      0.74011999000   涨了1.几个万分点
+
+       模型差距不能太大，否则会出现问题
+
+    使用简单的随机森林分数只有0.66
+
+    14.baseline_14.csv 设置权重了
+      线下：[0.91285127036263913, 0.91383364999576289, 0.91520714058654595, 0.91592534736772346, 0.91421795090573255, 0.91282365472570415]
+      平均分：0.835657733412
+      线上：0.73901795
+      submit_2.csv basleine_14.csv   -》submit_3.csv   一样的分数
+
+    15.加了一个total_fee特征
+    线下：[0.91318872254306094, 0.91478112582475291, 0.91554719244927607, 0.91516420674459265, 0.91424090182436091, 0.9146845585745077]
+    平均分： 0.836495205035
+    线上：0.675
+    效果很差
+
+    16.n_splits=8，没有设置num_leaves，代码在baseline.csv文件中
+    线下：[0.91306997214339025, 0.9118752551898569, 0.91621792585212924, 0.91737572563672309, 0.91644225947048918, 0.91580328559904867, 0.91543261885242966, 0.91259297162347042]
+    线上：0.74082488
+    平均分：0.836952812913
+    baseline_16.csv
+
+    17.可以试试9折lgb
+    线下：
+    线上：
+    平均分：
+
+    18.stacking 各种模型试试
+
+    17.vote融合
+
+    baseline_5,7,13,16.csv
+    结果：0.7399左右
+
+
+    19.
+    线下：[0.91353535522172213, 0.91583034756377113, 0.91655682054236987, 0.91734642296783031, 0.91596236348014659, 0.91711776002039125, 0.91657294183419691, 0.91605089941483797]
+    平均分：0.839278811419
+    线上：0.738353
+
+    20.
+      baseline_17,16,7,13.csv
+      得分:0.7403
+    21.
+       baseline_19.csv    0.7407971
+    22.
+      融合策略
+      baseline_19.csv,baseline_16.csv,baseline_7.csv   ===>
+      submit_7.csv    ==>0.74221367000
+
+    23.单纯的进行特征提取能,去掉了一些特征，然后加了一些特征
+    线下：[0.91435465035269425, 0.91654281890386713, 0.91884961501623685, 0.91705719832893251, 0.91724289701541817, 0.91674223559929902, 0.91696617122585344, 0.91693542214947865]
+    线上：0.74214870000
+    平均分：0.840588940492
+    baseline_20.csv
+
+    24.vote融合
+    baseline_20.csv baseline_19.csv  baseline_16.csv
+    submit_9.csv
+    线上: 0.74282688000
+
+    25.融合：
+    baseline_20.csv baseline_19.csv  baseline_7.csv
+    submit_11.csv
+    线上：0.74283969
+
+    baseline_20.csv baseline_16.csv  baseline_7.csv
+    submit_12.csv
+    线上： 0.7426282200
+
+
+    26.添加了is_over_fee和is_mix_service特征,将性别转换了整型数据，并将年龄大于100的作为异常值删除了。
+
+    27.融合
+    baseline_21,20,16.csv
+    0.74222434000
+
+    baseline 20,7,21.csv
+    0.74293131000
+    ==>submit_14.csv
+
+    baseine20,21,7,19.csv
+    ==>submit_15.csv
+     0.74112439000
+
+   baseine20,21,16,19.csv
+   -->submit_16.csv
+
+   baseine20,21,13.csv
+   -->submit_17.csv
+
+   baseline_20,7,111.csv
+   0.74338651
+   -->submit_20.csv
+
+   baseline_21,7,111.csv
+   ->submit_21.csv
+   0.7421
+
+   baseline_111.csv
+   0.7421多分
+
+   28.融合：应该是最佳的方式
+   baseline_20.csv   0.74214870000   使用的是lgb模型训练
+   baseline_111.csv  0.7421多分       使用的xgb模型
+   baseline_112.csv  0.73882669000   使用的xgb模型，然后删除了'is_promise_low_consume','service_type'，并且将训练轮数改为2000
+   --》submit_22.csv  0.74412864
+
+   29.basline_113.csv   去掉了gender和is_promise_low_consume特征，训练轮数为1000
+   线上：0.74146825000
+
+   30.融合
+   baseline_20.csv    0.74214870000
+   baseline_111.csv   0.7421多分
+   baseline_113.csv   0.74146825000
+   -》submit_25.csv    0.743985100
+
+   融合：
+   baseline_20.csv    0.74214870000    lgb
+   baseline_111.csv   0.7421多分        xgb
+   baseline_113.csv   0.74146825000     xgb
+   baseline_112.csv   0.73882669000     xgb
+   ===>submit_26.csv  0.743405000
+
+    融合：
+   baseline_20.csv    0.74214870000  lgb
+   baseline_111.csv   0.7421多分      xgb
+   baseline_9.csv     0.73813134     lgb
+   ==》submit_27.csv  0.7425349400
+
+   31.
+       baseline_114.csv    0.7434055700   轮数1000
+       df = df.drop(['complaint_former_num',
+                          'pay_times',
+                          'complaint_level',
+                          'complaint_former_fee',
+                          'is_over_fee',
+            #               'is_promise_low_consume',  #考虑去掉  service_type 也可以去掉
+            #               'service_type',  # 添加了
+                          'is_mix_service',
+            #               "gender",    #去掉gender试试
+                          'net_service'], axis=1)
+
+       融合：
+       baseline_114.csv    0.7434055700    xgb
+       baseline_20.csv     0.74214870000   lgb
+       baseline_112.csv    0.73882669000   xgb
+       --->submit_29.csv   0.7452590000
+
+       baseline_114.csv
+       baseline_111.csv
+       baseline_112.csv
+       submit_30.csv   0.74401265
+
+       baseline_20,114,111,22.csv  ->submit_31.csv 0.7420706700
+
+    32.baseline_115.csv  0.7431  xgb
+
+          df = df.drop(['complaint_former_num',
+                     # 'pay_times',  本次添加
+                      # 'complaint_level',
+                      'complaint_former_fee',
+                      'is_over_fee',
+                      'is_mix_service'],axis=1)
+                      # 'net_service'], axis=1)
+    只有结果之间相差较大的时候，融合会比较好
+
+
+    baseline_116.csv  0.74344  xgb   用的是抽样分层交叉验证
+
+    baseline_116.csv baseline_114.csv  baseline_20.csv   融合没啥效果    0.7452590000
+
+
+    融合策略:
+    "submit_29.csv","submit_30.csv","submit_25.csv"==>submit_41.csv  0.74528623000
+
+    融合：
+    submit_41.csv   sumit_22.csv   baseline_116.csv
+
+    33.添加了一个total_fee_weight特征
+    baseline_118.csv 在baseline_116.csv的基础上增加了4个万分点 0.74385786  xgb
+    basline_24.csv                lgb
+
+
+    融合策略：
+    baseline_118.csv   baseline_112.csv  baseline_20.csv   0.74519
+
+    baseline_118.csv   submit_29.csv   submit_41.csv
+
+    再造一个特征：
+       --->submit_29.csv   0.7452590000
+
+    34.
+     添加了一个特征：pay_num_times
+     并将max_depth=8  原来是6
+     并将n_splits=8   原来是10
+     baseline_119.csv   0.74339318
+
+    submission_9.csv
+
+    basline_119.csv   0.74339   xgb
+    baseline_114.csv  0.7434055700  xgb
+    baseline_20.csv   0.74214870000   lgb
+    ->submit_55.csv   0.74562198
+
+    baseline_119,118,20.csv
+    submit_56.csv
+
+    max_depth=6,n_splits=10,加个特征pay_num_times
+    baseline_120.csv   0.741
+
+    "baseline_114.csv","baseline_120.csv","baseline_20.csv","baseline_119.csv","baseline_112.csv"
+    --->submit_60.csv 0.74591893
+
+    submit_61.csv  0.7457
+
+    #对类别标签进行了二值化操作，对非类别标签进行相应的标准化处理
+
+
+    xgb上面去掉的特征
+     df = df.drop(['complaint_former_num',
+                      # 'pay_times',   #
+                      'complaint_level',
+                      'complaint_former_fee',
+                      'is_over_fee',
+                      #'is_promise_low_consume',  #考虑去掉  service_type 也可以去掉
+                      #'service_type',  # 添加了
+                      'is_mix_service',
+                      #"gender",    #去掉gender试试
+                      'net_service'], axis=1)
+    xgb 这一次去掉了两个特征pay_times 和 is_promise_low_consume ，并且将随机种子设为了2018
+     submission_12.csv   0.74152553
+
+     "baseline_114.csv","baseline_120.csv","baseline_20.csv","baseline_119.csv","baseline_121.csv"
+
+
+     #现在对xgb代码进行了修改,还是要调参啊。。。。。不然真不行啊,单模型怎么上0.745啊。。。。
+     "baseline_114.csv", 0.7434055700  xgb
+     "baseline_122.csv", 0.7431749100  xgb
+     "baseline_20.csv",  0.74214870000 lgb
+     "baseline_119.csv", 0.74339       xgb
+     "baseline_112.csv", 0.73882669000 xgb
+     --->submit_64.csv 0.74622035
+
+
+     35.去掉pay_num_times特征试试  xgb
+     baseline_123.csv   0.7428左右
+
+     "baseline_114.csv", "baseline_122.csv", "baseline_20.csv","baseline_123.csv","baseline_119.csv"
+     ->submit_65.csv      0.74446929
+
+     "baseline_114.csv", "baseline_122.csv", "baseline_20.csv","baseline_123.csv","baseline_119.csv","baseline_112.csv"
+     submit_67.csv   0.74628627
+
+     submit_64.csv  submit_61.csv   submit_67.csv
+     ->submit_69.csv 0.74678737
+
+     所有的调参代码：(xgb+lgb)(跑7种情况)----->这是最好的情况
+     submit_61.csv -->baseline_20,112,114,119,120.csv
+     submit_64.csv -->baseline_20,112,119,114,122.csv
+     submit_67.csv -->baseline_20,112,119,114,122,123.csv
+     ->submit_69.csv
+
+     #旧版本在副本里
+
+     #新版本不在副本里
+     36.
+     xgb
+     去掉了 'colsample_bytree': 0.8, #
+           'is_low_promise_consume'
+           'pay_times'
+     将轮数改为600
+     baseline_124.csv  0.7387
+
+     "baseline_114.csv", "baseline_122.csv", "baseline_20.csv","baseline_123.csv","baseline_119.csv","baseline_124.csv"
+     -》submit_74.csv
+
+     "submit_64.csv","submit_67.csv","submit_74.csv"
+     =--->submit_75.csv   0.7465274
+
+     37.xgb
+     baseline_126.csv
+     去掉了is_promise_low_consume和service_type
+      df=rm_feats.remove_feats(df,['former_complaint_num',
+                      # 'pay_times',   #本次添加
+                      'complaint_level',
+                      'former_complaint_fee',
+                      'many_over_bill',
+                      'is_promise_low_consume',  #本次添加
+                      'service_type',  # 添加了
+                      'is_mix_service',
+                      #"gender",    #去掉gender试试
+                      'net_service'])
+    dft=rm_feats.remove_feats(dft,['former_complaint_num',
+                      # 'pay_times',   #本次添加
+                      'complaint_level',
+                      'former_complaint_fee',
+                       'many_over_bill',
+                      'is_promise_low_consume',  #本次添加
+                      'service_type',  # 添加了
+                      'is_mix_service',
+                      #"gender",    #去掉gender试试
+                      'net_service'])
+
+     38.
+     submit_61.csv -->baseline_20,112,114,119,120.csv
+     submit_64.csv -->baseline_20,112,119,114,122.csv
+     submit_67.csv -->baseline_20,112,119,114,122,123.csv
+     ->submit_69.csv
+
+
+     "baseline_114.csv", "baseline_20.csv","baseline_123.csv","baseline_119.csv","baseline_126.csv"
+     ->submit_81.csv  0.74618344
+
+
+
+     submit_64.csv   "baseline_20,112,119,114,122.csv"
+     submit_67.csv   "baseline_20,112,119,114,122,123.csv"
+     submit_81.csv   "baseline_114,20,123,119,126.csv"
+     submit_64.csv submit_67.csv submit_81.csv
+     ->submit_82.csv   0.74680966
+
+
+     39.
+      baseline_127.csv  0.74169147000
+      df = rm_feats.remove_feats(df, ['former_complaint_num',
+                                    'pay_times',   #本次添加
+                                    # 'complaint_level',
+                                    'former_complaint_fee',
+                                    #'many_over_bill',
+                                    # 'is_promise_low_consume',  # 本次添加
+                                   # 'service_type',  # 添加了
+                                    # 'is_mix_service',
+                                    # "gender",    #去掉gender试试
+                                    'net_service',
+                                    'service1_caller_time'])
+    dft = rm_feats.remove_feats(dft,['former_complaint_num',
+                                    'pay_times',   #本次添加
+                                    # 'complaint_level',
+                                    'former_complaint_fee',
+                                    #'many_over_bill',
+                                    # 'is_promise_low_consume',  # 本次添加
+                                    #'service_type',  # 添加了
+                                    # 'is_mix_service',
+                                    # "gender",    #去掉gender试试
+                                    'net_service',
+                                    'service1_caller_time'])
+    40.
+    baseline_128.csv     0.73959714000
+    加了一个特征mean_fee_month
+
+      df = rm_feats.remove_feats(df, ['former_complaint_num',
+                                    'pay_times',   #本次添加
+                                    # 'complaint_level',
+                                    'former_complaint_fee',
+                                    'many_over_bill',
+                                    # 'is_promise_low_consume',  # 本次添加
+                                    'service_type',  # 添加了
+                                    # 'is_mix_service',
+                                    # "gender",    #去掉gender试试
+                                    'net_service',
+                                    'service1_caller_time'])
+    dft = rm_feats.remove_feats(dft,['former_complaint_num',
+                                    'pay_times',   #本次添加
+                                    # 'complaint_level',
+                                    'former_complaint_fee',
+                                    'many_over_bill',
+                                    # 'is_promise_low_consume',  # 本次添加
+                                    'service_type',  # 添加了
+                                    # 'is_mix_service',
+                                    # "gender",    #去掉gender试试
+                                    'net_service',
+                                    'service1_caller_time'])
+
+
+
+
+     lgb  加了一个特征mean_fee_month
+     baseline_25.csv   0.74108732000
+
+
+     submit_84.csv--> "baseline_20,127,119,114,122.csv"  0.74637759000
+     submit_85.csv--> "baseline_20,127,119,114,122,123.csv"
+     submit_86.csv-->  "baseline_114,20,123,119,126.csv"
+
+
+     "submit_69.csv",  0.74678737
+     "submit_75.csv",  0.7465274
+     "submit_82.csv"-->"submit_64,67,81.csv"  0.74680966
+     ->submit_88.csv  0.74688232000
+
+
+     submit_87.csv   0.74668992000
+     submit_82.csv   0.74680966
+     submit_88.csv   0.74688232000
+     ->>submit_92.csv  0.7441116600
+
+     -->submit_88.csv
+     -->submit_92.csv
+     -->submit_75.csv
+     -->submit_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
