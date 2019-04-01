@@ -22,40 +22,40 @@
 
 #由于是新手，基本上就按照以下步骤进行的：
 
-   1.数据分析，主要是利用第三方matplotlib库，利用图示的方式来对数据进行展示
+   - [x] 数据分析，主要是利用第三方matplotlib库，利用图示的方式来对数据进行展示
    
-   2.数据清洗
+   - [x] 数据清洗
    
-   3.数据特征提取
+   - [x] 数据特征提取
    
-   4.对于一些缺失值进行填充
+   - [x] 对于一些缺失值进行填充
    
-   5.由于数据集中既包含类别特征，也包含连续特征，所以对类别特征进行one-hot编码，对连续特征进行归一化操作。
+   - [x] 由于数据集中既包含类别特征，也包含连续特征，所以对类别特征进行one-hot编码，对连续特征进行归一化操作。
    
-   6.利用随机森林和GBDT结合GridSearchCV()函数来对特征重要性进行排序，然后选择特征重要性比较高的特征,这样能去掉一些重要性较低的特征。
+   - [x] 利用随机森林和GBDT结合GridSearchCV()函数来对特征重要性进行排序，然后选择特征重要性比较高的特征,这样能去掉一些重要性较低的特征。
    
-   7.在数据特征工程做的差不多的时候，接下来进行模型的选择：
+   - [x] 在数据特征工程做的差不多的时候，接下来进行模型的选择：
    
      (1)lgb模型  f1_score:0.7441
      
      (2)xgb模型  f1_score:0.7521
      
-   8.这里没有使用stacking方式，而是简单的将上述的两个模型通过调整不同的参数来生成多个结果，然后再将这些结果通过投票的原则生成一个最终的结果，最终的f1_score:0.7693
+   - [x] 这里没有使用stacking方式，而是简单的将上述的两个模型通过调整不同的参数来生成多个结果，然后再将这些结果通过投票的原则生成一个最终的结果，最终的f1_score:0.7693
    
    
  #### 参考资料：
-  https://blog.csdn.net/github_38414650/article/details/76061893
+  - https://blog.csdn.net/github_38414650/article/details/76061893
   
-  https://blog.csdn.net/hqr20627/article/details/79426031
+  - https://blog.csdn.net/hqr20627/article/details/79426031
   
-  https://www.jianshu.com/p/48e82dbb142b
+  - https://www.jianshu.com/p/48e82dbb142b
   
-  https://www.jianshu.com/p/5378ef009cae
+  - https://www.jianshu.com/p/5378ef009cae
   
-  https://blog.csdn.net/sinat_26917383/article/details/54667077
+  - https://blog.csdn.net/sinat_26917383/article/details/54667077
 
 #初赛成绩：
+|A榜|B榜|
+|----|----|
+|38/2546|49/2546|
 
-  A榜：38/2546
-  
-  B榜：49/2546
