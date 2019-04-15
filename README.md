@@ -35,6 +35,31 @@
      
    - [x] 这里没有使用`stacking`方式，而是简单的将上述的两个模型通过调整不同的参数来生成多个结果，然后再将这些结果通过投票的原则生成一个最终的结果，最终的`f1_score:0.7693`
    
+     
+##### 运行流程
+```
+1.首先是要安装几个第三方库:
+   - numpy
+   - sklearn
+   - pandas
+   - xgboost
+   - lightgbm
+   - python 3.5.6
+2. IDE使用的是pycharm 3.5
+3.对于lgb_model文件夹：
+   - 先运行data_processing.py文件
+   - 再运行FeatureEngineering.py文件
+   - 运行lgb.py文件
+   - 为了与举办方要求的文件格式相同,最后使用get_final_result.py文件可以处理
+   - simple_vote.py文件主要是将多个结果进行简单的融合,可以后期使用
+4.对于xgb_model文件夹
+   - 先运行data_processing.py文件,data_process.py文件和Preprocess.py文件
+   - 再运行RemoveFeatures.py文件
+   - 接下来运行xgb_model.py文件
+   - 最后运行main.py文件
+   - get_result.py文件是为了获得与举办方要求的相同格式的结果。
+```
+   
    
  #### 参考资料：
   - https://blog.csdn.net/github_38414650/article/details/76061893
